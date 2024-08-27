@@ -1,0 +1,34 @@
+name: nodejs-template-api
+
+services:
+  database:
+    # Alway keep Postgres version in sync with version defined in infra repo.
+    image: postgres:16.1-alpine
+    container_name: ${COMPOSE_PROJECT_NAME}-database
+    ports:
+      # Leave port 5432 for custom local Postgres instances 🤷‍♂️
+      - "${STORAGE_PORT:-5433}:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=nodejs-template-api
+    healthcheck:
+      test: ["CMD", "su", "postgres", "-c", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+  firebase:
+    image: fixl/firebase-emulator-suite:13.7.1
+    container_name: ${COMPOSE_PROJECT_NAME}-firebase
+    ports:
+      # Default UI Port
+      - "4000:4000"
+      # Defalt AUTH port
+      - "9099:9099"
+    environment:
+      - AUTH=true
+volumes:
+  pgdata: {}

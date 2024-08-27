@@ -24,6 +24,7 @@
     "noFallthroughCasesInSwitch": false,
     "noUncheckedIndexedAccess": true,
     "forceConsistentCasingInFileNames": false,
+    "strictPropertyInitialization": false,
 
     "outDir": "./dist"
   }
