@@ -2,6 +2,8 @@ import { IsNumber, IsString, IsNotEmpty, Max, Min } from "class-validator"
 import { registerAs } from "@nestjs/config"
 import { DataSourceOptions } from "typeorm"
 import { load } from "../../common/config/load"
+import { User } from "../user/entities/user.entity";
+import * as path from "node:path";
 
 const databaseConfig = registerAs('databaseConfig', () => load(DatabaseConfig))
 
@@ -36,7 +38,9 @@ function configToTypeOrmOptions(config: DatabaseConfig): DataSourceOptions {
         username: config.DATABASE_USERNAME,
         password: config.DATABASE_PASSWORD,
         database: config.DATABASE_DB_NAME,
-        entities: [],
+        entities: [User],
+        migrations: [path.join(__dirname, './migrations/*.js')],
+        migrationsRun: true,
         synchronize: false,
     }
 }
