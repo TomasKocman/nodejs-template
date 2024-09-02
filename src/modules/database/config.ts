@@ -2,10 +2,9 @@ import { IsNumber, IsString, IsNotEmpty, Max, Min } from "class-validator"
 import { registerAs } from "@nestjs/config"
 import { DataSourceOptions } from "typeorm"
 import { load } from "../../common/config/load"
-import { User } from "../user/entities/user.entity";
 import * as path from "node:path";
 
-const databaseConfig = registerAs('databaseConfig', () => load(DatabaseConfig))
+const config = registerAs("databaseConfig", () => load(DatabaseConfig))
 
 class DatabaseConfig {
     @IsString()
@@ -38,11 +37,11 @@ function configToTypeOrmOptions(config: DatabaseConfig): DataSourceOptions {
         username: config.DATABASE_USERNAME,
         password: config.DATABASE_PASSWORD,
         database: config.DATABASE_DB_NAME,
-        entities: [User],
-        migrations: [path.join(__dirname, './migrations/*.js')],
+        migrations: [path.join(__dirname, "./migrations/*.{js,ts}")],
         migrationsRun: true,
         synchronize: false,
+        logging: false
     }
 }
 
-export { databaseConfig, DatabaseConfig, configToTypeOrmOptions }
+export { config, DatabaseConfig, configToTypeOrmOptions }

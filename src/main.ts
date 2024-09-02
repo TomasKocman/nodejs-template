@@ -1,5 +1,5 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
+import { NestFactory } from "@nestjs/core"
+import { AppModule } from "./app.module"
 import { appConfig, AppConfig } from "./app.config";
 import { ValidationPipe } from "@nestjs/common";
 

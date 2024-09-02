@@ -3,9 +3,9 @@ import { registerAs } from "@nestjs/config"
 import { load } from "./common/config/load"
 
 enum Environment {
-    Dev = "dev",
-    Stg = "stg",
-    Prod = "prod"
+    DEV = "dev",
+    STG = "stg",
+    PROD = "prod"
 }
 
 class AppConfig {
@@ -18,7 +18,7 @@ class AppConfig {
     PORT!: number
 }
 
-const appConfig = registerAs('appConfig', () => load(AppConfig))
+const appConfig = registerAs("appConfig", () => load(AppConfig))
 
 export {
     Environment,
