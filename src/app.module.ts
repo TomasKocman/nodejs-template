@@ -4,7 +4,8 @@ import { UserModule } from "./modules/user/module"
 import { ConfigModule } from "@nestjs/config"
 import { appConfig } from "./app.config"
 import { DatabaseModule } from "./modules/database/module"
-import { AppExceptionFilter } from "./exception.filter"
+import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./common/filters/app.exception"
+import { validation } from "./common/pipes/validation"
 
 @Module({
     imports: [
@@ -18,7 +19,19 @@ import { AppExceptionFilter } from "./exception.filter"
     providers: [
         {
             provide: nest.APP_FILTER,
+            useClass: SinkExceptionFilter
+        },
+        {
+            provide: nest.APP_FILTER,
+            useClass: HttpExceptionFilter
+        },
+        {
+            provide: nest.APP_FILTER,
             useClass: AppExceptionFilter
+        },
+        {
+            provide: nest.APP_PIPE,
+            useFactory: validation
         }
     ]
 })

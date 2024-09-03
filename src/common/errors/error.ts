@@ -1,6 +1,6 @@
-export class ServiceException extends Error {
+export class AppException extends Error {
     code: string
-    data?: Map<string, any>
+    data?: Record<string, unknown>
 
     constructor(
         message: string,
@@ -11,7 +11,7 @@ export class ServiceException extends Error {
         this.code = code
     }
 
-    withData(data: Map<string, any>): ServiceException {
+    withData(data: Record<string, unknown>): AppException {
         this.data = data
         return this
     }
