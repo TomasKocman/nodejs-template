@@ -5,7 +5,7 @@ import { ConfigModule } from "@nestjs/config"
 import { appConfig } from "./app.config"
 import { DatabaseModule } from "./modules/database/module"
 import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./common/filters/app.exception"
-import { validation } from "./common/pipes/validation"
+import { validationPipe } from "./common/pipes/validationPipe"
 
 @Module({
     imports: [
@@ -31,7 +31,7 @@ import { validation } from "./common/pipes/validation"
         },
         {
             provide: nest.APP_PIPE,
-            useFactory: validation
+            useFactory: validationPipe
         }
     ]
 })

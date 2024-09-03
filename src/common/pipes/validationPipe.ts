@@ -1,5 +1,6 @@
 import { ValidationPipe } from "@nestjs/common"
 import { AppException } from "../errors/error"
+import { ParseUUIDPipe } from "@nestjs/common/pipes/parse-uuid.pipe"
 
 class ValidationException extends AppException {
     constructor(cause?: Error) {
@@ -7,7 +8,7 @@ class ValidationException extends AppException {
     }
 }
 
-function validation(): ValidationPipe {
+function validationPipe(): ValidationPipe {
     return new ValidationPipe({
         exceptionFactory: (errors) => {
             const errorFields = errors.map(error => error.property)
@@ -16,7 +17,16 @@ function validation(): ValidationPipe {
     })
 }
 
+function parseUUIDPipe(): ParseUUIDPipe {
+    return new ParseUUIDPipe({
+        exceptionFactory: () => {
+            throw new ValidationException().withData({fields: ["id path param"]})
+        },
+    })
+}
+
 export {
-    validation,
-    ValidationException
+    ValidationException,
+    validationPipe,
+    parseUUIDPipe
 }

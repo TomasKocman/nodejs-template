@@ -1,10 +1,25 @@
 import { User } from "../entity/user"
 import { IsEmail, IsNotEmpty, IsString } from "class-validator"
-import { PartialType } from "@nestjs/mapped-types"
+import { ApiProperty, ApiPropertyOptions, PartialType } from "@nestjs/swagger"
+
+const userNameProperty: ApiPropertyOptions = {
+    description: "The name of the user",
+    example: "John Doe",
+}
+
+const userEmailProperty: ApiPropertyOptions = {
+    description: "The email of the user",
+    example: "john.doe@example.com",
+}
 
 class UserDto {
+    @ApiProperty()
     readonly id: string
+
+    @ApiProperty(userNameProperty)
     readonly name: string
+
+    @ApiProperty(userEmailProperty)
     readonly email: string
 
     constructor(user: User) {
@@ -17,9 +32,11 @@ class UserDto {
 class CreateUserDto {
     @IsString()
     @IsNotEmpty()
+    @ApiProperty(userNameProperty)
     readonly name: string
 
     @IsEmail()
+    @ApiProperty(userEmailProperty)
     readonly email: string
 }
 

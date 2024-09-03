@@ -1,7 +1,7 @@
 import { AppException } from "../errors/error"
 import { UserNotFoundException } from "../../modules/user/entity/error"
 import { HttpStatus } from "@nestjs/common"
-import { ValidationException } from "../pipes/validation"
+import { ValidationException } from "../pipes/validationPipe"
 
 type HttpErrorData = {
     statusCode: number
