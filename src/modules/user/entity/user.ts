@@ -1,44 +1,57 @@
 import { v7 as uuidv7 } from "uuid"
-import { Entity, Column, PrimaryColumn } from "typeorm";
+import { Entity, Column, PrimaryColumn } from "typeorm"
+
+class CreateUserInput {
+    authId: string
+    displayName?: string
+    email?: string
+}
+
+class UpdateUserInput {
+    displayName?: string
+}
 
 @Entity()
 class User {
+    static create(input: CreateUserInput): User {
+        const user = new User()
+        user.id = uuidv7()
+        user.authId = input.authId
+        user.displayName = input.displayName
+        user.email = input.email
+        user.createdAt = new Date()
+        user.updatedAt = new Date()
+        return user
+    }
+
     @PrimaryColumn({type: "uuid"})
-    readonly id: string
+    id: string
 
-    @Column({type: "text"})
-    name: string
+    @Column({type: "text", unique: true})
+    authId: string
 
-    @Column({type: "text"})
-    email: string
+    @Column({type: "text", nullable: true})
+    displayName?: string
+
+    @Column({type: "text", nullable: true, unique: true})
+    email?: string
 
     @Column({type: "timestamptz"})
-    readonly createdAt: Date
+    createdAt: Date
 
     @Column({type: "timestamptz"})
     updatedAt: Date
 
-    constructor(name: string, email: string) {
-        this.id = uuidv7()
-        this.name = name
-        this.email = email
-        this.createdAt = new Date()
-        this.updatedAt = new Date()
-    }
-
     update(input: UpdateUserInput) {
-        this.name = input.name
-        this.email = input.email
+        if (input.displayName) {
+            this.displayName = input.displayName
+        }
         this.updatedAt = new Date()
     }
-}
-
-class UpdateUserInput {
-    name: string
-    email: string
 }
 
 export {
     User,
+    CreateUserInput,
     UpdateUserInput
 }

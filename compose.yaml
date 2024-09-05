@@ -2,11 +2,11 @@ name: nodejs-template-api
 
 services:
   database:
-    # Alway keep Postgres version in sync with version defined in infra repo.
+    # Alway keep Postgres version in sync with version defined in infra repo
     image: postgres:16.1-alpine
     container_name: ${COMPOSE_PROJECT_NAME}-database
     ports:
-      # Leave port 5432 for custom local Postgres instances 🤷‍♂️
+      # Leave port 5432 for custom local Postgres instances
       - "${STORAGE_PORT:-5433}:5432"
     environment:
       - POSTGRES_USER=postgres

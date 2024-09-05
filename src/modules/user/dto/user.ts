@@ -1,49 +1,39 @@
 import { User } from "../entity/user"
-import { IsEmail, IsNotEmpty, IsString } from "class-validator"
-import { ApiProperty, ApiPropertyOptions, PartialType } from "@nestjs/swagger"
-
-const userNameProperty: ApiPropertyOptions = {
-    description: "The name of the user",
-    example: "John Doe",
-}
-
-const userEmailProperty: ApiPropertyOptions = {
-    description: "The email of the user",
-    example: "john.doe@example.com",
-}
+import { ApiProperty } from "@nestjs/swagger"
 
 class UserDto {
-    @ApiProperty()
+    @ApiProperty({
+        description: "ID of the user",
+        example: "78fd98ac-dbae-4e07-a9f0-eb92c2fb7128"
+    })
     readonly id: string
 
-    @ApiProperty(userNameProperty)
-    readonly name: string
+    @ApiProperty({
+        description: "Auth ID of the user",
+        example: "OD3vRA5lUbZt4z23vselU9jMZsa2",
+    })
+    readonly authId: string
 
-    @ApiProperty(userEmailProperty)
-    readonly email: string
+    @ApiProperty({
+        description: "Display name of the user",
+        example: "John Doe",
+    })
+    readonly displayName?: string
+
+    @ApiProperty({
+        description: "Email of the user",
+        example: "john.doe@example.com",
+    })
+    readonly email?: string
 
     constructor(user: User) {
         this.id = user.id
-        this.name = user.name
+        this.authId = user.authId
+        this.displayName = user.displayName
         this.email = user.email
     }
 }
 
-class CreateUserDto {
-    @IsString()
-    @IsNotEmpty()
-    @ApiProperty(userNameProperty)
-    readonly name: string
-
-    @IsEmail()
-    @ApiProperty(userEmailProperty)
-    readonly email: string
-}
-
-class UpdateUserDto extends PartialType(CreateUserDto) {}
-
 export {
     UserDto,
-    CreateUserDto,
-    UpdateUserDto
 }

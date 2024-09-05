@@ -8,7 +8,8 @@ import { ConfigModule } from "@nestjs/config"
         TypeOrmModule.forRootAsync({
             useFactory: (config: DatabaseConfig): TypeOrmModuleOptions => ({
                 ...configToTypeOrmOptions(config),
-                autoLoadEntities: true
+                autoLoadEntities: true,
+                entities: ["./src/modules/**/entity/*.{js}"],
             }),
             imports: [ConfigModule.forFeature(config)],
             inject: [config.KEY]
