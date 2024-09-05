@@ -2,12 +2,12 @@ import {
     ArgumentsHost,
     Catch,
     ExceptionFilter,
-    HttpException,
-    Logger
+    HttpException
 } from "@nestjs/common"
 import { type Response as ExpressResponse } from "express"
-import { AppException } from "../errors/error"
+import { AppException } from "../common/errors/error"
 import { defaultErrorCode, defaultErrorMessage, defaultStatusCode, getHttpStatusWithMessage } from "./http.error"
+import { Als } from "../common/als/als"
 
 @Catch(AppException)
 class AppExceptionFilter implements ExceptionFilter {
@@ -47,11 +47,9 @@ class HttpExceptionFilter implements ExceptionFilter {
 
 @Catch()
 class SinkExceptionFilter implements ExceptionFilter {
-    private readonly logger = new Logger(SinkExceptionFilter.name)
-
     catch(exception: any, host: ArgumentsHost) {
-        const ctx = host.switchToHttp()
-        const response = ctx.getResponse<ExpressResponse>()
+        const httpCtx = host.switchToHttp()
+        const response = httpCtx.getResponse<ExpressResponse>()
         const payload: Record<string, unknown> = {}
 
         payload.errorCode = defaultErrorCode
@@ -60,9 +58,9 @@ class SinkExceptionFilter implements ExceptionFilter {
 
         response.status(defaultStatusCode).json(payload)
 
-        this.logger.error({
-            stackTrace: exception.stack
-        }, defaultErrorMessage)
+        const alsCtx = Als.storage.getStore()!
+        alsCtx.internalServerError = exception
+        Als.storage.enterWith(alsCtx)
     }
 }
 

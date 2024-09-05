@@ -11,7 +11,7 @@ import {
 import { Service } from "./service"
 import { CreateUserDto, UpdateUserDto, UserDto } from "./dto/user"
 import { UpdateUserInput } from "./entity/user"
-import { parseUUIDPipe } from "../../common/pipes/validationPipe"
+import { parseUUIDPipe } from "../../pipes/validation-pipe"
 import { ApiResponse, ApiTags } from "@nestjs/swagger"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
 

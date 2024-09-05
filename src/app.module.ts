@@ -4,12 +4,14 @@ import { UserModule } from "./modules/user/module"
 import { ConfigModule } from "@nestjs/config"
 import { AppConfig, appConfig } from "./app.config"
 import { DatabaseModule } from "./modules/database/module"
-import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./common/filters/app.exception"
-import { validationPipe } from "./common/pipes/validationPipe"
-import { LoggingMiddleware } from "./common/middlewares/logging"
+import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./filters/app.exception"
+import { validationPipe } from "./pipes/validation-pipe"
+import { LoggingMiddleware } from "./middlewares/logging"
 import { LoggerModule } from "nestjs-pino"
 import * as pino from "pino"
+import { v7 as uuidv7 } from "uuid"
 import { load } from "./common/config/load"
+import { RequestIdMiddleware } from "./middlewares/requestid"
 
 @Module({
     imports: [
@@ -33,7 +35,8 @@ import { load } from "./common/config/load"
                             req: () => {},
                             res: () => {}
                         },
-                        transport: transport
+                        transport: transport,
+                        genReqId: () => uuidv7()
                     }
                 }
             },
@@ -68,7 +71,7 @@ import { load } from "./common/config/load"
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(LoggingMiddleware)
+            .apply(RequestIdMiddleware, LoggingMiddleware)
             .forRoutes("*")
     }
 }

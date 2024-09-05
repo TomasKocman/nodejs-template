@@ -1,5 +1,5 @@
 import { ValidationPipe } from "@nestjs/common"
-import { AppException } from "../errors/error"
+import { AppException } from "../common/errors/error"
 import { ParseUUIDPipe } from "@nestjs/common/pipes/parse-uuid.pipe"
 
 class ValidationException extends AppException {
