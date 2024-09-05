@@ -3,10 +3,14 @@ import { AppModule } from "./app.module"
 import { appConfig, AppConfig } from "./app.config";
 import { ValidationPipe } from "@nestjs/common";
 import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from "@nestjs/swagger"
+import { Logger } from "nestjs-pino"
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule)
+    const app = await NestFactory.create(AppModule, {
+        logger: false,
+    })
     app.useGlobalPipes(new ValidationPipe())
+    app.useLogger(app.get(Logger))
 
     const swaggerConfig = new DocumentBuilder()
         .setTitle("NodeJS template")

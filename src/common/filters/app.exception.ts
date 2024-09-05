@@ -2,7 +2,8 @@ import {
     ArgumentsHost,
     Catch,
     ExceptionFilter,
-    HttpException
+    HttpException,
+    Logger
 } from "@nestjs/common"
 import { type Response as ExpressResponse } from "express"
 import { AppException } from "../errors/error"
@@ -46,6 +47,8 @@ class HttpExceptionFilter implements ExceptionFilter {
 
 @Catch()
 class SinkExceptionFilter implements ExceptionFilter {
+    private readonly logger = new Logger(SinkExceptionFilter.name)
+
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp()
         const response = ctx.getResponse<ExpressResponse>()
@@ -56,6 +59,10 @@ class SinkExceptionFilter implements ExceptionFilter {
         payload.errorData = { stackTrace: exception.stack }
 
         response.status(defaultStatusCode).json(payload)
+
+        this.logger.error({
+            stackTrace: exception.stack
+        }, defaultErrorMessage)
     }
 }
 

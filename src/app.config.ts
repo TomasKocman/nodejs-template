@@ -1,4 +1,4 @@
-import { IsEnum, IsNumber, Max, Min } from "class-validator"
+import { IsBoolean, IsEnum, IsNumber, IsOptional, IsString, Max, Min } from "class-validator"
 import { registerAs } from "@nestjs/config"
 import { load } from "./common/config/load"
 
@@ -11,6 +11,13 @@ enum Environment {
 class AppConfig {
     @IsEnum(Environment)
     ENV!: Environment
+
+    @IsString()
+    LOG_LEVEL!: string
+
+    @IsBoolean()
+    @IsOptional()
+    LOG_PRETTY: boolean
 
     @IsNumber()
     @Min(0)
