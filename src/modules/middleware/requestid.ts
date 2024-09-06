@@ -1,7 +1,7 @@
 import { Injectable, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
 import { v7 as uuidv7 } from "uuid"
-import { Als, Context } from "../common/als/als"
+import { Als, Context } from "../../common/als/als"
 
 @Injectable()
 export class RequestIdMiddleware implements NestMiddleware {

@@ -34,6 +34,26 @@ class UserDto {
     }
 }
 
+class SignInResp {
+    @ApiProperty({
+        description: "Sign in response",
+        type: UserDto,
+    })
+    readonly user: UserDto
+
+    @ApiProperty({
+        description: "Is new user",
+        example: true,
+    })
+    readonly isNewUser: boolean
+
+    constructor(user: User, isNewUser: boolean) {
+        this.user = new UserDto(user)
+        this.isNewUser = isNewUser
+    }
+}
+
 export {
     UserDto,
+    SignInResp,
 }

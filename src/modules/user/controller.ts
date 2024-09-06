@@ -1,7 +1,7 @@
-import { Controller, Get, Param } from "@nestjs/common"
+import { Controller, Get, Param, Post } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { Service } from "./service"
-import { UserDto } from "./dto/user"
+import { SignInResp, UserDto } from "./dto/user"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
 import { parseUUIDPipe } from "../../pipes/validation-pipe"
 
@@ -21,6 +21,18 @@ const apiResponseForbidden = {
 @Controller("users")
 export class UserController {
     constructor(private readonly userService: Service) {}
+
+    @Post("/sign-in")
+    @ApiOperation({
+        summary: "Sign in or create a new user if not exists",
+        description: "Sign in if the user can be authenticated based on the provided JWT token, otherwise create a new account",
+        operationId: "signIn",
+    })
+    @ApiResponse({ status: 200, type: SignInResp, description: "Successfully created user or successfully logged in as existing user" })
+    @ApiResponse(apiResponseUnauthorized)
+    createUser() {
+
+    }
 
     @Get("/")
     @ApiOperation({

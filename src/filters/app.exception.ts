@@ -66,9 +66,8 @@ class SinkExceptionFilter implements ExceptionFilter {
         }
         response.status(defaultStatusCode).json(payload)
 
-        const alsCtx = Als.storage.getStore()!
-        alsCtx.internalServerError = exception
-        Als.storage.enterWith(alsCtx)
+        ctx.internalServerError = exception
+        Als.setContext(ctx)
     }
 }
 

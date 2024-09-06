@@ -2,6 +2,7 @@ import { AppException } from "../common/errors/error"
 import { UserNotFoundException } from "../modules/user/entity/error"
 import { HttpStatus } from "@nestjs/common"
 import { ValidationException } from "../pipes/validation-pipe"
+import { UnauthorizedException } from "../modules/middleware/auth"
 
 type HttpErrorData = {
     statusCode: number
@@ -24,6 +25,8 @@ function getHttpStatusWithMessage(exception: AppException): HttpErrorData {
 
     if (exception instanceof ValidationException) { // API exceptions.
         httpErrorData.statusCode = HttpStatus.BAD_REQUEST
+    } else if (exception instanceof UnauthorizedException) {
+        httpErrorData.statusCode = HttpStatus.UNAUTHORIZED
     } else if (exception instanceof UserNotFoundException) { // User exceptions.
         httpErrorData.statusCode = HttpStatus.NOT_FOUND
     } else {

@@ -6,13 +6,16 @@ import { AppConfig, appConfig } from "./app.config"
 import { DatabaseModule } from "./modules/database/module"
 import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./filters/app.exception"
 import { validationPipe } from "./pipes/validation-pipe"
-import { LoggingMiddleware } from "./middlewares/logging"
+import { LoggingMiddleware } from "./modules/middleware/logging"
 import { LoggerModule } from "nestjs-pino"
 import * as pino from "pino"
 import { v7 as uuidv7 } from "uuid"
 import { load } from "./common/config/load"
-import { RequestIdMiddleware } from "./middlewares/requestid"
+import { RequestIdMiddleware } from "./modules/middleware/requestid"
 import { MaintenanceModule } from "./modules/misc/maintenance/module"
+import { AuthenticationMiddleware } from "./modules/middleware/auth"
+import { MiddlewareModule } from "./modules/middleware/module"
+import { FirebaseModule } from "./modules/firebase/module"
 
 @Module({
     imports: [
@@ -49,6 +52,8 @@ import { MaintenanceModule } from "./modules/misc/maintenance/module"
         DatabaseModule,
         UserModule,
         MaintenanceModule,
+        FirebaseModule,
+        MiddlewareModule,
     ],
     providers: [
         {
@@ -73,7 +78,7 @@ import { MaintenanceModule } from "./modules/misc/maintenance/module"
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(RequestIdMiddleware, LoggingMiddleware)
+            .apply(RequestIdMiddleware, LoggingMiddleware, AuthenticationMiddleware)
             .forRoutes("*")
     }
 }

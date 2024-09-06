@@ -1,6 +1,6 @@
 import { Injectable, Logger, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
-import { Als } from "../common/als/als"
+import { Als } from "../../common/als/als"
 
 type LogFields = {
     requestId: string
