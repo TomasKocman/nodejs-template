@@ -24,22 +24,22 @@ class User {
         return user
     }
 
-    @PrimaryColumn({type: "uuid"})
+    @PrimaryColumn({name: "id", type: "uuid"})
     id: string
 
-    @Column({type: "text", unique: true})
+    @Column({name: "auth_id", type: "text", unique: true})
     authId: string
 
-    @Column({type: "text", nullable: true})
+    @Column({name: "display_name", type: "text", nullable: true})
     displayName?: string
 
-    @Column({type: "text", nullable: true, unique: true})
+    @Column({name: "email", type: "text", nullable: true, unique: true})
     email?: string
 
-    @Column({type: "timestamptz"})
+    @Column({name: "created_at", type: "timestamptz"})
     createdAt: Date
 
-    @Column({type: "timestamptz"})
+    @Column({name: "updated_at", type: "timestamptz"})
     updatedAt: Date
 
     update(input: UpdateUserInput) {

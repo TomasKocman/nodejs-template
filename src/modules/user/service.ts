@@ -10,26 +10,26 @@ export class Service {
 
     async create(input: CreateUserInput): Promise<User> {
         const user = User.create(input)
-        await this.userRepository.create(user)
+        await this.userRepository.createUser(user)
         return user
     }
 
-    findAll() {
-        return this.userRepository.findAll()
+    listUsers() {
+        return this.userRepository.listUsers()
     }
 
-    findOne(id: string): Promise<User> {
-        return this.userRepository.findOne(id)
+    readUser(id: string): Promise<User> {
+        return this.userRepository.readUser(id)
     }
 
-    update(id: string, input: UpdateUserInput): Promise<User> {
-        return this.userRepository.update(id, (user) => {
+    updateUser(id: string, input: UpdateUserInput): Promise<User> {
+        return this.userRepository.updateUser(id, (user) => {
             user.update(input)
             return user
         })
     }
 
-    async delete(id: string) {
-        await this.userRepository.delete(id)
+    async deleteUser(id: string) {
+        await this.userRepository.deleteUser(id)
     }
 }

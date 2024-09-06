@@ -11,15 +11,15 @@ export class UserRepository {
         @InjectRepository(User) private readonly userRepository: Repository<User>
     ) {}
 
-    async create(user: User) {
+    async createUser(user: User) {
         await this.userRepository.insert(user)
     }
 
-    async findAll(): Promise<User[]> {
+    async listUsers(): Promise<User[]> {
         return await this.userRepository.find()
     }
 
-    async findOne(id: string): Promise<User> {
+    async readUser(id: string): Promise<User> {
         const user = await this.userRepository.findOneBy({
             id: id
         })
@@ -29,7 +29,7 @@ export class UserRepository {
         return user
     }
 
-    async update(id: string, updateFn: (user: User) => User): Promise<User> {
+    async updateUser(id: string, updateFn: (user: User) => User): Promise<User> {
         return await this.dataSource.transaction(async (manager) => {
             let user = await manager.createQueryBuilder(User, "user")
                 .where("user.id = :id", { id: id })
@@ -45,7 +45,7 @@ export class UserRepository {
         })
     }
 
-    async delete(id: string) {
+    async deleteUser(id: string) {
         const result = await this.userRepository.delete({ id: id })
         if (!result.affected) {
             throw new Error("user not found")

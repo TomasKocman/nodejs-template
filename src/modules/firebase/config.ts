@@ -1,10 +1,6 @@
 import { IsJSON } from "class-validator"
 
-class FirebaseConfig {
+export class FirebaseConfig {
     @IsJSON()
     FIREBASE_CONFIG: string
-}
-
-export {
-    FirebaseConfig
 }

@@ -12,6 +12,7 @@ import * as pino from "pino"
 import { v7 as uuidv7 } from "uuid"
 import { load } from "./common/config/load"
 import { RequestIdMiddleware } from "./middlewares/requestid"
+import { MaintenanceModule } from "./modules/misc/maintenance/module"
 
 @Module({
     imports: [
@@ -41,12 +42,13 @@ import { RequestIdMiddleware } from "./middlewares/requestid"
                 }
             },
         }),
-        UserModule,
         ConfigModule.forRoot({
             cache: true,
             load: [appConfig]
         }),
         DatabaseModule,
+        UserModule,
+        MaintenanceModule,
     ],
     providers: [
         {
