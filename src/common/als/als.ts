@@ -7,6 +7,10 @@ type Context = {
 
 class Als {
     public static storage = new AsyncLocalStorage<Context>()
+
+    public static getContext(): Context {
+        return Als.storage.getStore()!
+    }
 }
 
 export {

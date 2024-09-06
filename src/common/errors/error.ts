@@ -21,6 +21,12 @@ class AppException extends Error {
 
 class AppExceptionOpenAPIModel {
     @ApiProperty({
+        description: "Request ID",
+        example: "2cb1a484-0f55-4e4a-a627-16a322d9eee6",
+    })
+    requestId: string
+
+    @ApiProperty({
         description: "Error message",
         example: "invalid field xyz",
     })

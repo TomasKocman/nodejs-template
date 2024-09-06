@@ -22,7 +22,7 @@ export class LoggingMiddleware implements NestMiddleware {
         res.on("close", () => {
             const requestDuration = new Date().getTime() - requestStart.getTime()
             const statusCode = res.statusCode
-            const { requestId, internalServerError } = Als.storage.getStore()!
+            const { requestId, internalServerError } = Als.getContext()
             const logFields: LogFields = {
                 requestId: requestId,
                 path: originalUrl,

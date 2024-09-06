@@ -9,20 +9,28 @@ import { AppException } from "../common/errors/error"
 import { defaultErrorCode, defaultErrorMessage, defaultStatusCode, getHttpStatusWithMessage } from "./http.error"
 import { Als } from "../common/als/als"
 
+type Payload = {
+    requestId: string
+    errorCode: string
+    errorMessage: string
+    errorData?: Record<string, unknown>
+}
+
 @Catch(AppException)
 class AppExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
-        const ctx = host.switchToHttp()
-        const response = ctx.getResponse<ExpressResponse>()
-        const payload: Record<string, unknown> = {}
+        const httpCtx = host.switchToHttp()
+        const response = httpCtx.getResponse<ExpressResponse>()
         const httpData = getHttpStatusWithMessage(exception)
-
-        payload.errorCode = httpData.code
-        payload.errorMessage = httpData.message
+        const ctx = Als.getContext()
+        const payload: Payload = {
+            requestId: ctx.requestId,
+            errorCode: httpData.code,
+            errorMessage: httpData.message,
+        }
         if (httpData.data) {
             payload.errorData = httpData.data
         }
-
         response.status(httpData.statusCode).json(payload)
     }
 }
@@ -30,17 +38,14 @@ class AppExceptionFilter implements ExceptionFilter {
 @Catch(HttpException)
 class HttpExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
-        const ctx = host.switchToHttp()
-        const response = ctx.getResponse<ExpressResponse>()
-        const payload: Record<string, unknown> = {}
-
-        if (typeof exception.response === "string") {
-            payload.errorMessage = exception.response
-        } else {
-            payload.errorCode = defaultErrorCode
-            payload.errorMessage = exception.response.message
+        const httpCtx = host.switchToHttp()
+        const response = httpCtx.getResponse<ExpressResponse>()
+        const ctx = Als.getContext()
+        const payload: Payload = {
+            requestId: ctx.requestId,
+            errorCode: defaultErrorCode,
+            errorMessage: typeof exception.response === "string" ? exception.response : exception.response.message
         }
-
         response.status(exception.getStatus()).json(payload)
     }
 }
@@ -50,12 +55,15 @@ class SinkExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
         const httpCtx = host.switchToHttp()
         const response = httpCtx.getResponse<ExpressResponse>()
-        const payload: Record<string, unknown> = {}
-
-        payload.errorCode = defaultErrorCode
-        payload.errorMessage = defaultErrorMessage
-        payload.errorData = { stackTrace: exception.stack }
-
+        const ctx = Als.getContext()
+        const payload: Payload = {
+            requestId: ctx.requestId,
+            errorCode: defaultErrorCode,
+            errorMessage: defaultErrorMessage,
+            errorData: {
+                stackTrace: exception.stack
+            }
+        }
         response.status(defaultStatusCode).json(payload)
 
         const alsCtx = Als.storage.getStore()!
