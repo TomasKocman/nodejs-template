@@ -1,14 +1,14 @@
 import { v7 as uuidv7 } from "uuid"
 import { Entity, Column, PrimaryColumn } from "typeorm"
 
-class CreateUserInput {
+type CreateUserInput = {
     authId: string
-    displayName?: string
-    email?: string
+    displayName: string | null
+    email: string | null
 }
 
-class UpdateUserInput {
-    displayName?: string
+type UpdateUserInput = {
+    displayName: string | null
 }
 
 @Entity()
@@ -31,10 +31,10 @@ class User {
     authId: string
 
     @Column({name: "display_name", type: "text", nullable: true})
-    displayName?: string
+    displayName: string | null
 
     @Column({name: "email", type: "text", nullable: true, unique: true})
-    email?: string
+    email: string | null
 
     @Column({name: "created_at", type: "timestamptz"})
     createdAt: Date

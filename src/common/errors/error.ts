@@ -7,7 +7,7 @@ class AppException extends Error {
     constructor(
         message: string,
         code: string,
-        cause?: Error,
+        cause?: unknown,
     ) {
         super(message, { cause: cause })
         this.code = code

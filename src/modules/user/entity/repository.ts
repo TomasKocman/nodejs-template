@@ -2,7 +2,8 @@ import { Injectable } from "@nestjs/common"
 import { InjectRepository } from "@nestjs/typeorm"
 import { DataSource, Repository } from "typeorm"
 import { User } from "./user"
-import { UserNotFoundException } from "./error"
+import { UserAlreadyExistsException, UserNotFoundException } from "./error"
+import { isUniqueError } from "../../database/errors"
 
 @Injectable()
 export class UserRepository {
@@ -12,7 +13,14 @@ export class UserRepository {
     ) {}
 
     async createUser(user: User) {
-        await this.userRepository.insert(user)
+        try {
+            await this.userRepository.insert(user)
+        } catch (e) {
+            if (isUniqueError(e)) {
+                throw new UserAlreadyExistsException(e)
+            }
+            throw e
+        }
     }
 
     async listUsers(): Promise<User[]> {
@@ -48,7 +56,7 @@ export class UserRepository {
     async deleteUser(id: string) {
         const result = await this.userRepository.delete({ id: id })
         if (!result.affected) {
-            throw new Error("user not found")
+            throw new UserNotFoundException()
         }
     }
 }

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>FE auth mock</title>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getAuth, linkWithPopup, GoogleAuthProvider, FacebookAuthProvider, GithubAuthProvider, createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, connectAuthEmulator } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js'
+
+    let useEmulator = true;
+    const emulatorParam = new URL(window.location.toString()).searchParams.get("emulator")
+    if (emulatorParam?.toLowerCase() === "true") {
+      useEmulator = true;
+    }
+    else if (emulatorParam?.toLowerCase() === "false") {
+      useEmulator = false;
+    }
+
+    let auth
+    if (!useEmulator) {
+      console.log("using real firebase")
+      const firebaseConfig = {
+        // create a web app in firebase and fill the generated config here
+        apiKey: "",
+        authDomain: "",
+        projectId: "",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: ""
+      };
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+    }
+    else {
+      console.log("using firebase emulator")
+      const firebaseConfig = {
+        apiKey: "dummy",
+        authDomain: "local",
+        projectId: "local",
+        storageBucket: "",
+        messagingSenderId: "",
+        appId: ""
+      };
+      const app = initializeApp(firebaseConfig);
+      auth = getAuth(app);
+      connectAuthEmulator(auth, "http://127.0.0.1:9099");
+    }
+
+    export function google() {
+      const provider = new GoogleAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a Google Access Token. You can use it to access the Google API.
+          const credential = GoogleAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user;
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+
+          let id_token = user.getIdToken();
+          presentTokenDelayed("ID Token:", id_token)
+        }).catch((error) => {
+        console.log(error)
+      });
+    }
+
+    export function facebook() {
+      const provider = new FacebookAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+          const credential = FacebookAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user;
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+
+          let id_token = user.getIdToken();
+          presentTokenDelayed("ID Token:", id_token)
+        }).catch((error) => {
+        console.log(error)
+      });
+    }
+
+    export function github() {
+      const provider = new GithubAuthProvider();
+      signInWithPopup(auth, provider)
+        .then((result) => {
+          // This gives you a GitHub Access Token. You can use it to access the GitHub API.
+          const credential = GithubAuthProvider.credentialFromResult(result);
+          const token = credential.accessToken;
+          // The signed-in user info.
+          const user = result.user;
+          // IdP data available using getAdditionalUserInfo(result)
+          // ...
+
+          let id_token = user.getIdToken();
+          presentTokenDelayed("ID Token:", id_token)
+        }).catch((error) => {
+        console.log(error)
+      });
+    }
+
+    export function signUpUserWithEmailAndPassword() {
+      createUserWithEmailAndPassword(auth, document.getElementById("email").value, document.getElementById("password").value)
+        .then((result) => {
+          // The signed-in user info.
+          const user = result.user;
+
+          let id_token = user.getIdToken();
+          presentToken("ID Token:", id_token)
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+    }
+
+    export function loginUserWithEmailAndPassword() {
+      signInWithEmailAndPassword(auth, document.getElementById("email").value, document.getElementById("password").value)
+        .then((result) => {
+          // The signed-in user info.
+          const user = result.user;
+
+          let id_token = user.getIdToken();
+          presentToken("ID Token:", id_token)
+        })
+        .catch((error) => {
+          console.log(error)
+        });
+    }
+
+    export function linkGitHubWithExistingAccount() {
+      const provider = new GithubAuthProvider();
+      linkWithPopup(auth.currentUser, provider).then((result) => {
+        // Accounts successfully linked.
+        const credential = GithubAuthProvider.credentialFromResult(result);
+        const user = result.user;
+        let id_token = user.getIdToken();
+        presentTokenDelayed("ID Token:", id_token)
+      }).catch((error) => {
+        console.log(error)
+      });
+    }
+
+    export function linkFacebookWithExistingAccount() {
+      const provider = new FacebookAuthProvider();
+      linkWithPopup(auth.currentUser, provider).then((result) => {
+        // Accounts successfully linked.
+        const credential = FacebookAuthProvider.credentialFromResult(result);
+        const user = result.user;
+        let id_token = user.getIdToken();
+        presentTokenDelayed("ID Token:", id_token)
+      }).catch((error) => {
+        console.log(error)
+      });
+    }
+
+    export function refreshToken() {
+      const id_token = auth.currentUser.getIdToken(true)
+      presentToken("ID Token:", id_token)
+    }
+
+    function presentToken(text, id_token) {
+      console.log(text, id_token)
+      id_token.then((id_token_result) => {
+        navigator.clipboard.writeText(id_token_result);
+      })
+    }
+
+    function presentTokenDelayed(text, id_token) {
+      console.log(text, id_token)
+      // wait a bit for focus (after popup window), because without focus you cannot write to clipboard
+      new Promise(resolve => setTimeout(resolve, 1000)).then(
+        () => id_token.then((id_token_result) => {
+          navigator.clipboard.writeText(id_token_result);
+        })
+      )
+    }
+
+    window.google = google
+    window.facebook = facebook
+    window.github = github
+    window.signUpUserWithEmailAndPassword = signUpUserWithEmailAndPassword
+    window.loginUserWithEmailAndPassword = loginUserWithEmailAndPassword
+    window.linkGitHubWithExistingAccount = linkGitHubWithExistingAccount
+    window.linkFacebookWithExistingAccount = linkFacebookWithExistingAccount
+    window.refreshToken = refreshToken
+  </script>
+</head>
+<body>
+<h1>Firebase sign-in</h1>
+<button onclick="google()">Google</button>
+<br>
+<br>
+<button onclick="facebook()">Facebook</button>
+<br>
+<br>
+<button onclick="github()">GitHub</button>
+<br>
+<br>
+<label for="email">Email</label>
+<input type="text" id="email">
+<label for="password">Password</label>
+<input type="password" id="password">
+<button onclick="signUpUserWithEmailAndPassword()">Create user with email with password</button>
+<button onclick="loginUserWithEmailAndPassword()">Login user with email with password</button>
+<br>
+<br>
+<button onclick="linkGitHubWithExistingAccount()">Link GitHub with existing account</button>
+<br>
+<br>
+<button onclick="linkFacebookWithExistingAccount()">Link Facebook with existing account</button>
+<br>
+<br>
+<button onclick="refreshToken()">Refresh token</button>
+</body>
+</html>

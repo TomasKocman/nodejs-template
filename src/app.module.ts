@@ -16,6 +16,7 @@ import { MaintenanceModule } from "./modules/misc/maintenance/module"
 import { AuthenticationMiddleware } from "./modules/middleware/auth"
 import { MiddlewareModule } from "./modules/middleware/module"
 import { FirebaseModule } from "./modules/firebase/module"
+import { UserController } from "./modules/user/controller"
 
 @Module({
     imports: [
@@ -78,7 +79,10 @@ import { FirebaseModule } from "./modules/firebase/module"
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
-            .apply(RequestIdMiddleware, LoggingMiddleware, AuthenticationMiddleware)
+            .apply(RequestIdMiddleware, LoggingMiddleware)
             .forRoutes("*")
+        consumer.
+            apply(AuthenticationMiddleware).
+            forRoutes(UserController)
     }
 }

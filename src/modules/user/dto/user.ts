@@ -29,8 +29,8 @@ class UserDto {
     constructor(user: User) {
         this.id = user.id
         this.authId = user.authId
-        this.displayName = user.displayName
-        this.email = user.email
+        this.displayName = user.displayName ?? undefined
+        this.email = user.email ?? undefined
     }
 }
 

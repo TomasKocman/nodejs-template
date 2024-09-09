@@ -1,9 +1,10 @@
-import { Controller, Get, Param, Post } from "@nestjs/common"
+import { Controller, Get, HttpCode, Param, Post } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
-import { Service } from "./service"
+import { UserService } from "./service"
 import { SignInResp, UserDto } from "./dto/user"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
 import { parseUUIDPipe } from "../../pipes/validation-pipe"
+import { Als } from "../../common/als/als"
 
 const apiResponseUnauthorized = {
     status: 401,
@@ -20,9 +21,10 @@ const apiResponseForbidden = {
 @ApiTags("users")
 @Controller("users")
 export class UserController {
-    constructor(private readonly userService: Service) {}
+    constructor(private readonly userService: UserService) {}
 
     @Post("/sign-in")
+    @HttpCode(200)
     @ApiOperation({
         summary: "Sign in or create a new user if not exists",
         description: "Sign in if the user can be authenticated based on the provided JWT token, otherwise create a new account",
@@ -30,8 +32,11 @@ export class UserController {
     })
     @ApiResponse({ status: 200, type: SignInResp, description: "Successfully created user or successfully logged in as existing user" })
     @ApiResponse(apiResponseUnauthorized)
-    createUser() {
-
+    @ApiResponse({ status: 409, type: AppExceptionOpenAPIModel, description: "A user with the same email already exists." })
+    async signIn(): Promise<SignInResp> {
+        const ctx = Als.getContext()
+        const resp = await this.userService.signIn(ctx.verifiedToken!)
+        return new SignInResp(resp.user, resp.created)
     }
 
     @Get("/")
@@ -41,7 +46,7 @@ export class UserController {
         operationId: "getUsers",
     })
     @ApiResponse({ status: 200, type: [UserDto], description: "List of users" })
-    async listUsers() {
+    async listUsers(): Promise<UserDto[]> {
         const users = await this.userService.listUsers()
         return users.map(user => new UserDto(user))
     }

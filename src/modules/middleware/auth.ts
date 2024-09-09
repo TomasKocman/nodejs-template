@@ -1,17 +1,10 @@
 import { Injectable, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
-import { AppException } from "../../common/errors/error"
+import { UnauthorizedException } from "../user/entity/error"
 import { FirebaseService } from "../firebase/service"
 import { Als } from "../../common/als/als"
 
-const authHeader = "Authorization"
-const authSchema = "Bearer "
-
-class UnauthorizedException extends AppException {
-    constructor(cause?: Error) {
-        super("invalid id token", "ERR_UNAUTHORIZED", cause)
-    }
-}
+const authSchema = "Bearer"
 
 @Injectable()
 class AuthenticationMiddleware implements NestMiddleware {
@@ -19,8 +12,8 @@ class AuthenticationMiddleware implements NestMiddleware {
         private readonly firebaseService: FirebaseService
     ) {}
 
-    async use(req: Request, _: Response, next: () => void): Promise<void> {
-        const authHeaderValue = req.headers[authHeader] as string
+    async use(req: Request, _: Response, next: () => void) {
+        const authHeaderValue = req.headers.authorization as string
         if (!authHeaderValue) {
             throw new UnauthorizedException()
         }
@@ -45,6 +38,5 @@ class AuthenticationMiddleware implements NestMiddleware {
 }
 
 export {
-    UnauthorizedException,
     AuthenticationMiddleware
 }
