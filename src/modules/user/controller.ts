@@ -67,7 +67,7 @@ export class UserController {
         return new UserDto(user)
     }
 
-    @Get("/:uuid")
+    @Get("/:id")
     @ApiOperation({
         summary: "Read info about arbitrary user",
         description: "Read info about arbitrary user",
@@ -79,7 +79,7 @@ export class UserController {
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse(apiResponseForbidden)
     @ApiResponse({ status: 404, type: AppExceptionOpenAPIModel, description: "User not found" })
-    async readUser(@Param("uuid", parseUUIDPipe()) id: string): Promise<UserDto> {
+    async readUser(@Param("id", parseUUIDPipe()) id: string): Promise<UserDto> {
         const user = await this.userService.readUser(id)
         return new UserDto(user)
     }
