@@ -17,12 +17,14 @@ class UserDto {
     @ApiProperty({
         description: "Display name of the user",
         example: "John Doe",
+        required: false
     })
     readonly displayName?: string
 
     @ApiProperty({
         description: "Email of the user",
         example: "john.doe@example.com",
+        required: false
     })
     readonly email?: string
 

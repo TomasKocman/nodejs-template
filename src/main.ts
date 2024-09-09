@@ -17,6 +17,7 @@ async function bootstrap() {
         .setDescription("This is an API for NodeJs project template, that can be used as a base for your own API.")
         .setVersion("0.1.0")
         .addServer("https://api.example.com/", "Server description, e.g. Main (production) server")
+        .addBearerAuth()
         .build()
     const options: SwaggerDocumentOptions = {
         operationIdFactory: (_: string, methodKey: string) => methodKey

@@ -1,5 +1,5 @@
 import { Controller, Get, HttpCode, Param, Post } from "@nestjs/common"
-import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { UserService } from "./service"
 import { SignInResp, UserDto } from "./dto/user"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
@@ -45,6 +45,7 @@ export class UserController {
         description: "Read info about all users",
         operationId: "getUsers",
     })
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: [UserDto], description: "List of users" })
     async listUsers(): Promise<UserDto[]> {
         const users = await this.userService.listUsers()
@@ -57,6 +58,7 @@ export class UserController {
         description: "Read info about the user based on the provided JWT token",
         operationId: "me",
     })
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: UserDto, description: "User" })
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse(apiResponseForbidden)
@@ -71,6 +73,7 @@ export class UserController {
         description: "Read info about arbitrary user",
         operationId: "readUser",
     })
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: UserDto, description: "Read arbitrary user" })
     @ApiResponse({ status: 400, type: AppExceptionOpenAPIModel, description: "Wrong path param" })
     @ApiResponse(apiResponseUnauthorized)
