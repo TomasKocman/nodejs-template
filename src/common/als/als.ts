@@ -4,7 +4,7 @@ import { VerifiedToken } from "../../modules/firebase/token"
 type Context = {
     requestId: string
     verifiedToken?: VerifiedToken
-    internalServerError?: Error
+    exception?: Error
 }
 
 class Als {

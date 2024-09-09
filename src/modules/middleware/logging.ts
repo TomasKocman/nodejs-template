@@ -2,13 +2,18 @@ import { Injectable, Logger, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
 import { Als } from "../../common/als/als"
 
+type ErrorFields = {
+    message: string
+    stackTrace: string
+}
+
 type LogFields = {
     requestId: string
     path: string
     method: string
     duration: string
     statusCode: number
-    stackTrace?: string
+    error?: ErrorFields
 }
 
 @Injectable()
@@ -22,14 +27,19 @@ export class LoggingMiddleware implements NestMiddleware {
         res.on("close", () => {
             const requestDuration = new Date().getTime() - requestStart.getTime()
             const statusCode = res.statusCode
-            const { requestId, internalServerError } = Als.getContext()
+            const { requestId, exception } = Als.getContext()
             const logFields: LogFields = {
                 requestId: requestId,
                 path: originalUrl,
                 method: method,
                 duration: `${requestDuration}ms`,
                 statusCode: statusCode,
-                stackTrace: internalServerError?.stack
+            }
+            if (exception) {
+                logFields.error = {
+                    message: exception.message,
+                    stackTrace: exception.stack!
+                }
             }
             if (statusCode >= 500) {
                 this.logger.error(logFields, "request processed")

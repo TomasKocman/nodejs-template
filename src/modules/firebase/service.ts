@@ -5,6 +5,7 @@ import { getAuth, Auth } from "firebase-admin/auth"
 import { load } from "../../common/config/load"
 import { FirebaseConfig } from "./config"
 import { Claims, CustomClaims, VerifiedToken } from "./token"
+import { UnauthorizedException } from "../user/entity/error"
 
 @Injectable()
 export class FirebaseService {
@@ -19,17 +20,21 @@ export class FirebaseService {
     }
 
     async authenticate(idToken: string): Promise<VerifiedToken> {
-        const token = await this.authClient.verifyIdToken(idToken)
-        const claims: Claims = {
-            displayName: token.name,
-            email: token.email,
-            phone: token.phone_number,
-            avatarUrl: token.picture,
-            custom: {
-                userId: token.custom?.userId ?? undefined
+        try {
+            const token = await this.authClient.verifyIdToken(idToken)
+            const claims: Claims = {
+                displayName: token.name,
+                email: token.email,
+                phone: token.phone_number,
+                avatarUrl: token.picture,
+                custom: {
+                    userId: token.custom?.userId
+                }
             }
+            return new VerifiedToken(claims, token.uid)
+        } catch (e) {
+            throw new UnauthorizedException(e)
         }
-        return new VerifiedToken(claims, token.uid)
     }
 
     setCustomClaims(uid: string, claims: CustomClaims) {

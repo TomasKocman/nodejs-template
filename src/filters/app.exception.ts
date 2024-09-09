@@ -32,6 +32,9 @@ class AppExceptionFilter implements ExceptionFilter {
             payload.errorData = httpData.data
         }
         response.status(httpData.statusCode).json(payload)
+
+        ctx.exception = exception
+        Als.setContext(ctx)
     }
 }
 
@@ -47,6 +50,9 @@ class HttpExceptionFilter implements ExceptionFilter {
             errorMessage: typeof exception.response === "string" ? exception.response : exception.response.message
         }
         response.status(exception.getStatus()).json(payload)
+
+        ctx.exception = exception
+        Als.setContext(ctx)
     }
 }
 
@@ -66,7 +72,7 @@ class SinkExceptionFilter implements ExceptionFilter {
         }
         response.status(defaultStatusCode).json(payload)
 
-        ctx.internalServerError = exception
+        ctx.exception = exception
         Als.setContext(ctx)
     }
 }
