@@ -16,6 +16,14 @@ type LogFields = {
     error?: ErrorFields
 }
 
+function errorMessage(err: Error): string {
+    let message = err.message
+    if (err.cause instanceof Error) {
+        message += `: ${errorMessage(err.cause)}`
+    }
+    return message
+}
+
 @Injectable()
 export class LoggingMiddleware implements NestMiddleware {
     private readonly logger = new Logger(LoggingMiddleware.name)
@@ -37,7 +45,7 @@ export class LoggingMiddleware implements NestMiddleware {
             }
             if (exception) {
                 logFields.error = {
-                    message: exception.message,
+                    message: errorMessage(exception),
                     stackTrace: exception.stack!
                 }
             }
