@@ -8,6 +8,7 @@ import { Logger } from "nestjs-pino"
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         logger: false,
+        cors: true,
     })
     app.useGlobalPipes(new ValidationPipe())
     app.useLogger(app.get(Logger))
