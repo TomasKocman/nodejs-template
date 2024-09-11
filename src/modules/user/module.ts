@@ -5,6 +5,7 @@ import { TypeOrmModule } from "@nestjs/typeorm"
 import { User } from "./entity/user"
 import { UserRepository } from "./entity/repository"
 import { FirebaseModule } from "../firebase/module"
+import { UserResolver } from "./resolver"
 
 @Module({
     imports: [
@@ -12,6 +13,6 @@ import { FirebaseModule } from "../firebase/module"
         FirebaseModule,
     ],
     controllers: [UserController],
-    providers: [UserService, UserRepository],
+    providers: [UserResolver, UserService, UserRepository],
 })
 export class UserModule {}

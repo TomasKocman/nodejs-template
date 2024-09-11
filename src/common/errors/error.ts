@@ -1,5 +1,8 @@
 import { ApiProperty } from "@nestjs/swagger"
 
+const defaultErrorCode = "ERR_UNKNOWN"
+const defaultErrorMessage = "internal server error"
+
 class AppException extends Error {
     code: string
     data?: Record<string, unknown>
@@ -47,6 +50,8 @@ class AppExceptionOpenAPIModel {
 }
 
 export {
+    defaultErrorCode,
+    defaultErrorMessage,
     AppException,
     AppExceptionOpenAPIModel
 }

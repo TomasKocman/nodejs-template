@@ -1,7 +1,7 @@
-import { User } from "../entity/user"
+import { User as EntityUser } from "../entity/user"
 import { ApiProperty } from "@nestjs/swagger"
 
-class UserDto {
+class User {
     @ApiProperty({
         description: "ID of the user",
         example: "78fd98ac-dbae-4e07-a9f0-eb92c2fb7128"
@@ -28,7 +28,7 @@ class UserDto {
     })
     readonly email?: string
 
-    constructor(user: User) {
+    constructor(user: EntityUser) {
         this.id = user.id
         this.authId = user.authId
         this.displayName = user.displayName ?? undefined
@@ -39,9 +39,9 @@ class UserDto {
 class SignInResp {
     @ApiProperty({
         description: "Sign in response",
-        type: UserDto,
+        type: User,
     })
-    readonly user: UserDto
+    readonly user: User
 
     @ApiProperty({
         description: "Is new user",
@@ -49,13 +49,13 @@ class SignInResp {
     })
     readonly isNewUser: boolean
 
-    constructor(user: User, isNewUser: boolean) {
-        this.user = new UserDto(user)
+    constructor(user: EntityUser, isNewUser: boolean) {
+        this.user = new User(user)
         this.isNewUser = isNewUser
     }
 }
 
 export {
-    UserDto,
+    User,
     SignInResp,
 }

@@ -1,6 +1,10 @@
 import { Injectable, Logger, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
 import { Als } from "../../common/als/als"
+import { Plugin } from "@nestjs/apollo"
+import { ApolloServerPlugin, GraphQLRequestListener } from "@apollo/server"
+import { AppException } from "../../common/errors/error"
+import { GraphQLError } from "graphql/index"
 
 type ErrorFields = {
     message: string
@@ -57,5 +61,48 @@ export class LoggingMiddleware implements NestMiddleware {
         })
 
         next()
+    }
+}
+
+type GqlErrorFields = {
+    message: string
+    code: string
+    data: any
+    path: typeof GraphQLError.prototype.path
+}
+
+@Plugin()
+export class ApolloLoggingPlugin implements ApolloServerPlugin {
+    private readonly logger = new Logger(ApolloLoggingPlugin.name)
+
+    async requestDidStart(): Promise<GraphQLRequestListener<any>> {
+        const requestStart = new Date()
+        return {
+            didEncounterErrors: async (ctx) => {
+                const { requestId } = Als.getContext()
+                const requestDuration = new Date().getTime() - requestStart.getTime()
+                const errors: (GraphQLError | GqlErrorFields)[] = []
+                ctx.errors.forEach((error) => {
+                    if (error.originalError instanceof AppException) {
+                        const appError = error.originalError as AppException
+                        const errorFields: GqlErrorFields = {
+                            message: errorMessage(appError),
+                            code: appError.code,
+                            data: appError.data,
+                            path: error.path
+                        }
+                        errors.push(errorFields)
+                    } else {
+                        errors.push(error)
+                    }
+                })
+                const logFields = {
+                    errors: errors,
+                    duration: `${requestDuration}ms`,
+                    requestId: requestId,
+                }
+                this.logger.error(logFields, "request processed")
+            },
+        }
     }
 }

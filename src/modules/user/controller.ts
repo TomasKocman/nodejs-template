@@ -1,7 +1,7 @@
 import { Controller, Get, HttpCode, Param, Post } from "@nestjs/common"
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { UserService } from "./service"
-import { SignInResp, UserDto } from "./dto/user"
+import { SignInResp, User } from "./dto/user"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
 import { parseUUIDPipe } from "../../pipes/validation-pipe"
 import { Als } from "../../common/als/als"
@@ -21,7 +21,9 @@ const apiResponseForbidden = {
 @ApiTags("users")
 @Controller("users")
 export class UserController {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+    ) {}
 
     @Post("/sign-in")
     @HttpCode(200)
@@ -46,10 +48,10 @@ export class UserController {
         operationId: "getUsers",
     })
     @ApiBearerAuth()
-    @ApiResponse({ status: 200, type: [UserDto], description: "List of users" })
-    async listUsers(): Promise<UserDto[]> {
+    @ApiResponse({ status: 200, type: [User], description: "List of users" })
+    async listUsers(): Promise<User[]> {
         const users = await this.userService.listUsers()
-        return users.map(user => new UserDto(user))
+        return users.map(user => new User(user))
     }
 
     @Get("/me")
@@ -59,12 +61,12 @@ export class UserController {
         operationId: "me",
     })
     @ApiBearerAuth()
-    @ApiResponse({ status: 200, type: UserDto, description: "User" })
+    @ApiResponse({ status: 200, type: User, description: "User" })
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse(apiResponseForbidden)
-    async me(): Promise<UserDto> {
+    async me(): Promise<User> {
         const user = await this.userService.readUser("84c334eb-c23c-4c8c-9fad-4bf2cd5d2855")
-        return new UserDto(user)
+        return new User(user)
     }
 
     @Get("/:id")
@@ -74,13 +76,13 @@ export class UserController {
         operationId: "readUser",
     })
     @ApiBearerAuth()
-    @ApiResponse({ status: 200, type: UserDto, description: "Read arbitrary user" })
+    @ApiResponse({ status: 200, type: User, description: "Read arbitrary user" })
     @ApiResponse({ status: 400, type: AppExceptionOpenAPIModel, description: "Wrong path param" })
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse(apiResponseForbidden)
     @ApiResponse({ status: 404, type: AppExceptionOpenAPIModel, description: "User not found" })
-    async readUser(@Param("id", parseUUIDPipe()) id: string): Promise<UserDto> {
+    async readUser(@Param("id", parseUUIDPipe()) id: string): Promise<User> {
         const user = await this.userService.readUser(id)
-        return new UserDto(user)
+        return new User(user)
     }
 }

@@ -1,4 +1,4 @@
-import { AppException } from "../common/errors/error"
+import { AppException, defaultErrorCode, defaultErrorMessage } from "../common/errors/error"
 import {
     UserAlreadyExistsException,
     UserNotFoundException,
@@ -15,10 +15,8 @@ type HttpErrorData = {
 }
 
 const defaultStatusCode = HttpStatus.INTERNAL_SERVER_ERROR
-const defaultErrorCode = "ERR_UNKNOWN"
-const defaultErrorMessage = "internal server error"
 
-function getHttpStatusWithMessage(exception: AppException): HttpErrorData {
+function getHttpErrorData(exception: AppException): HttpErrorData {
     const httpErrorData: HttpErrorData = {
         code: exception.code,
         message: exception.message,
@@ -45,6 +43,5 @@ function getHttpStatusWithMessage(exception: AppException): HttpErrorData {
 export {
     defaultStatusCode,
     defaultErrorCode,
-    defaultErrorMessage,
-    getHttpStatusWithMessage
+    getHttpErrorData
 }

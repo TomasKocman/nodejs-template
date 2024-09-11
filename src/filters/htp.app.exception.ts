@@ -5,8 +5,8 @@ import {
     HttpException
 } from "@nestjs/common"
 import { type Response as ExpressResponse } from "express"
-import { AppException } from "../common/errors/error"
-import { defaultErrorCode, defaultErrorMessage, defaultStatusCode, getHttpStatusWithMessage } from "./http.error"
+import { AppException, defaultErrorMessage } from "../common/errors/error"
+import { defaultErrorCode, defaultStatusCode, getHttpErrorData } from "./http.error"
 import { Als } from "../common/als/als"
 
 type Payload = {
@@ -21,7 +21,7 @@ class AppExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
         const httpCtx = host.switchToHttp()
         const response = httpCtx.getResponse<ExpressResponse>()
-        const httpData = getHttpStatusWithMessage(exception)
+        const httpData = getHttpErrorData(exception)
         const ctx = Als.getContext()
         const payload: Payload = {
             requestId: ctx.requestId,

@@ -4,12 +4,15 @@ import { UserModule } from "./modules/user/module"
 import { ConfigModule } from "@nestjs/config"
 import { AppConfig, appConfig } from "./app.config"
 import { DatabaseModule } from "./modules/database/module"
-import { AppExceptionFilter, HttpExceptionFilter, SinkExceptionFilter } from "./filters/app.exception"
+import {
+    AppExceptionFilter,
+    HttpExceptionFilter,
+    SinkExceptionFilter
+} from "./filters/htp.app.exception"
 import { validationPipe } from "./pipes/validation-pipe"
 import { LoggingMiddleware } from "./modules/middleware/logging"
 import { LoggerModule } from "nestjs-pino"
 import * as pino from "pino"
-import { v7 as uuidv7 } from "uuid"
 import { load } from "./common/config/load"
 import { RequestIdMiddleware } from "./modules/middleware/requestid"
 import { MaintenanceModule } from "./modules/misc/maintenance/module"
@@ -17,9 +20,18 @@ import { AuthenticationMiddleware } from "./modules/middleware/auth"
 import { MiddlewareModule } from "./modules/middleware/module"
 import { FirebaseModule } from "./modules/firebase/module"
 import { UserController } from "./modules/user/controller"
+import { GraphQLModule } from "@nestjs/graphql"
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo"
+import { ApolloServerPluginLandingPageLocalDefault } from '@apollo/server/plugin/landingPage/default'
+import { UUIDScalar } from "./common/graphql/scalar"
+import { GqlAppExceptionFilter, gqlFormatError } from "./filters/gql.app.exception"
 
 @Module({
     imports: [
+        ConfigModule.forRoot({
+            cache: true,
+            load: [appConfig]
+        }),
         LoggerModule.forRootAsync({
             useFactory: () => {
                 const config = load(AppConfig)
@@ -41,14 +53,20 @@ import { UserController } from "./modules/user/controller"
                             res: () => {}
                         },
                         transport: transport,
-                        genReqId: () => uuidv7()
                     }
                 }
             },
         }),
-        ConfigModule.forRoot({
-            cache: true,
-            load: [appConfig]
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+            driver: ApolloDriver,
+            autoSchemaFile: "schema.graphqls",
+            introspection: true,
+            playground: false,
+            plugins: [ApolloServerPluginLandingPageLocalDefault()],
+            resolvers: {
+                UUID: UUIDScalar
+            },
+            formatError: gqlFormatError,
         }),
         DatabaseModule,
         UserModule,
@@ -68,6 +86,10 @@ import { UserController } from "./modules/user/controller"
         {
             provide: nest.APP_FILTER,
             useClass: AppExceptionFilter
+        },
+        {
+            provide: nest.APP_FILTER,
+            useClass: GqlAppExceptionFilter
         },
         {
             provide: nest.APP_PIPE,
