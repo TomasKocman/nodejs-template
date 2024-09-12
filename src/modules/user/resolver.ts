@@ -21,16 +21,6 @@ class UserResolver {
         return new SignInResp(resp.user, resp.created)
     }
 
-    @Query(() => [User])
-    async users(): Promise<User[]> {
-        const { verifiedToken } = Als.getContext()
-        if (!verifiedToken) {
-            throw new UnauthorizedException()
-        }
-        const users = await this.userService.listUsers()
-        return users.map(user => new User(user))
-    }
-
     @Query(() => User)
     async me(): Promise<User> {
         const { verifiedToken } = Als.getContext()
@@ -42,11 +32,28 @@ class UserResolver {
         const user = await this.userService.readUser(userId)
         return new User(user)
     }
+}
+
+@Resolver()
+class UserAdminResolver {
+    constructor(
+        private readonly userService: UserService,
+    ) {}
+
+    @Query(() => [User])
+    async users(): Promise<User[]> {
+        const { authAsAdmin } = Als.getContext()
+        if (!authAsAdmin) {
+            throw new UnauthorizedException()
+        }
+        const users = await this.userService.listUsers()
+        return users.map(user => new User(user))
+    }
 
     @Query(() => User)
     async user(@Args("id", { type: () => UUIDScalar }) id: string): Promise<User> {
-        const { verifiedToken } = Als.getContext()
-        if (!verifiedToken) {
+        const { authAsAdmin } = Als.getContext()
+        if (!authAsAdmin) {
             throw new UnauthorizedException()
         }
         const user = await this.userService.readUser(id)
@@ -55,5 +62,6 @@ class UserResolver {
 }
 
 export {
-    UserResolver
+    UserResolver,
+    UserAdminResolver
 }

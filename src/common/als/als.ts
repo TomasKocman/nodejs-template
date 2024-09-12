@@ -1,9 +1,10 @@
 import { AsyncLocalStorage } from "node:async_hooks"
-import { VerifiedToken } from "../../modules/firebase/token"
+import { VerifiedToken } from "../../modules/auth/firebase/token"
 
 type Context = {
     requestId: string
     verifiedToken?: VerifiedToken
+    authAsAdmin?: boolean
     exception?: Error
 }
 

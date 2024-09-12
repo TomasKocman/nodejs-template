@@ -1,5 +1,5 @@
 import { Module } from "@nestjs/common"
-import { FirebaseModule } from "../firebase/module"
+import { FirebaseModule } from "../auth/firebase/module"
 import { ApolloLoggingPlugin } from "./logging"
 
 @Module({

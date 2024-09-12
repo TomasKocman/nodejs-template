@@ -16,9 +16,22 @@ type Payload = {
     errorData?: Record<string, unknown>
 }
 
-@Catch(AppException)
-class AppExceptionFilter implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
+@Catch()
+export class AppExceptionFilter implements ExceptionFilter {
+    catch(exception: Error, host: ArgumentsHost): void {
+        if (host.getType() === "http") {
+            if (exception instanceof AppException) {
+                return this.handleAppException(exception, host)
+            }
+            if (exception instanceof HttpException) {
+                return this.handleHttpException(exception, host)
+            }
+            return this.sink(exception, host)
+        }
+        throw exception
+    }
+
+    handleAppException(exception: any, host: ArgumentsHost) {
         const httpCtx = host.switchToHttp()
         const response = httpCtx.getResponse<ExpressResponse>()
         const httpData = getHttpErrorData(exception)
@@ -36,11 +49,8 @@ class AppExceptionFilter implements ExceptionFilter {
         ctx.exception = exception
         Als.setContext(ctx)
     }
-}
 
-@Catch(HttpException)
-class HttpExceptionFilter implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
+    handleHttpException(exception: any, host: ArgumentsHost) {
         const httpCtx = host.switchToHttp()
         const response = httpCtx.getResponse<ExpressResponse>()
         const ctx = Als.getContext()
@@ -54,11 +64,8 @@ class HttpExceptionFilter implements ExceptionFilter {
         ctx.exception = exception
         Als.setContext(ctx)
     }
-}
 
-@Catch()
-class SinkExceptionFilter implements ExceptionFilter {
-    catch(exception: any, host: ArgumentsHost) {
+    sink(exception: any, host: ArgumentsHost) {
         const httpCtx = host.switchToHttp()
         const response = httpCtx.getResponse<ExpressResponse>()
         const ctx = Als.getContext()
@@ -75,10 +82,4 @@ class SinkExceptionFilter implements ExceptionFilter {
         ctx.exception = exception
         Als.setContext(ctx)
     }
-}
-
-export {
-    AppExceptionFilter,
-    HttpExceptionFilter,
-    SinkExceptionFilter
 }

@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common"
 import { CreateUserInput, UpdateUserInput, User } from "./entity/user"
 import { UserRepository } from "./entity/repository"
-import { VerifiedToken } from "../firebase/token"
-import { FirebaseService } from "../firebase/service"
+import { VerifiedToken } from "../auth/firebase/token"
+import { FirebaseService } from "../auth/firebase/service"
 
 type SignInResp = {
     user: User

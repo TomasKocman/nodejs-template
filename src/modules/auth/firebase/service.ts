@@ -2,14 +2,14 @@ import { Injectable } from "@nestjs/common"
 import { credential } from "firebase-admin"
 import { initializeApp } from "firebase-admin/app"
 import { getAuth, Auth } from "firebase-admin/auth"
-import { load } from "../../common/config/load"
+import { load } from "../../../common/config/load"
 import { FirebaseConfig } from "./config"
 import { Claims, CustomClaims, VerifiedToken } from "./token"
-import { UnauthorizedException } from "../user/entity/error"
+import { UnauthorizedException } from "../../user/entity/error"
 
 @Injectable()
 export class FirebaseService {
-    readonly authClient: Auth
+    private readonly authClient: Auth
 
     constructor() {
         const config = load(FirebaseConfig)

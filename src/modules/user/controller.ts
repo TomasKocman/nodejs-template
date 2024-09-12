@@ -5,6 +5,7 @@ import { SignInResp, User } from "./dto/user"
 import { AppExceptionOpenAPIModel } from "../../common/errors/error"
 import { parseUUIDPipe } from "../../pipes/validation-pipe"
 import { Als } from "../../common/als/als"
+import { UnauthorizedException } from "./entity/error"
 
 const apiResponseUnauthorized = {
     status: 401,
@@ -20,7 +21,7 @@ const apiResponseForbidden = {
 
 @ApiTags("users")
 @Controller("users")
-export class UserController {
+class UserController {
     constructor(
         private readonly userService: UserService,
     ) {}
@@ -32,6 +33,7 @@ export class UserController {
         description: "Sign in if the user can be authenticated based on the provided JWT token, otherwise create a new account",
         operationId: "signIn",
     })
+    @ApiBearerAuth()
     @ApiResponse({ status: 200, type: SignInResp, description: "Successfully created user or successfully logged in as existing user" })
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse({ status: 409, type: AppExceptionOpenAPIModel, description: "A user with the same email already exists." })
@@ -39,19 +41,6 @@ export class UserController {
         const ctx = Als.getContext()
         const resp = await this.userService.signIn(ctx.verifiedToken!)
         return new SignInResp(resp.user, resp.created)
-    }
-
-    @Get("/")
-    @ApiOperation({
-        summary: "Read info about all users",
-        description: "Read info about all users",
-        operationId: "getUsers",
-    })
-    @ApiBearerAuth()
-    @ApiResponse({ status: 200, type: [User], description: "List of users" })
-    async listUsers(): Promise<User[]> {
-        const users = await this.userService.listUsers()
-        return users.map(user => new User(user))
     }
 
     @Get("/me")
@@ -69,6 +58,31 @@ export class UserController {
         const user = await this.userService.readUser(verifiedToken?.claims.custom.userId!)
         return new User(user)
     }
+}
+
+@ApiTags("admin/users")
+@Controller("admin/users")
+class UserAdminController {
+    constructor(
+        private readonly userService: UserService,
+    ) {}
+
+    @Get("/")
+    @ApiOperation({
+        summary: "Read info about all users",
+        description: "Read info about all users",
+        operationId: "getUsers",
+    })
+    @ApiBearerAuth()
+    @ApiResponse({ status: 200, type: [User], description: "List of users" })
+    async listUsers(): Promise<User[]> {
+        const { authAsAdmin } = Als.getContext()
+        if (!authAsAdmin) {
+            throw new UnauthorizedException()
+        }
+        const users = await this.userService.listUsers()
+        return users.map(user => new User(user))
+    }
 
     @Get("/:id")
     @ApiOperation({
@@ -83,7 +97,16 @@ export class UserController {
     @ApiResponse(apiResponseForbidden)
     @ApiResponse({ status: 404, type: AppExceptionOpenAPIModel, description: "User not found" })
     async readUser(@Param("id", parseUUIDPipe()) id: string): Promise<User> {
+        const { authAsAdmin } = Als.getContext()
+        if (!authAsAdmin) {
+            throw new UnauthorizedException()
+        }
         const user = await this.userService.readUser(id)
         return new User(user)
     }
+}
+
+export {
+    UserController,
+    UserAdminController
 }

@@ -1,13 +1,6 @@
-import { GqlExceptionFilter } from "@nestjs/graphql"
 import { GraphQLError, GraphQLFormattedError } from "graphql/index"
-import { Als } from "../common/als/als"
-import { AppException, defaultErrorCode, defaultErrorMessage } from "../common/errors/error"
-
-class GqlAppExceptionFilter implements GqlExceptionFilter {
-    catch(exception: any) {
-        throw exception
-    }
-}
+import { Als } from "../als/als"
+import { AppException, defaultErrorCode, defaultErrorMessage } from "../errors/error"
 
 type GqlErrorData = {
     code: string
@@ -47,6 +40,5 @@ function gqlFormatError(formattedError: GraphQLFormattedError, error: unknown) {
 }
 
 export {
-    GqlAppExceptionFilter,
     gqlFormatError
 }

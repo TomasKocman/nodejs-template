@@ -2,7 +2,7 @@ import { AppException } from "../../../common/errors/error"
 
 class UnauthorizedException extends AppException {
     constructor(cause?: unknown) {
-        super("invalid id token", "ERR_UNAUTHORIZED", cause)
+        super("unauthorized", "ERR_UNAUTHORIZED", cause)
     }
 }
 

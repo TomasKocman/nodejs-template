@@ -1,9 +1,9 @@
 import { HttpStatus, Injectable, Logger, NestMiddleware } from "@nestjs/common"
 import { Request, Response } from "express"
 import { UnauthorizedException } from "../user/entity/error"
-import { FirebaseService } from "../firebase/service"
+import { FirebaseService } from "../auth/firebase/service"
 import { Als } from "../../common/als/als"
-import { VerifiedToken } from "../firebase/token"
+import { VerifiedToken } from "../auth/firebase/token"
 import { GraphQLError } from "graphql/index"
 import { defaultErrorCode, defaultErrorMessage } from "../../common/errors/error"
 

@@ -1,18 +1,18 @@
 import { Module } from "@nestjs/common"
 import { UserService } from "./service"
-import { UserController } from "./controller"
+import { UserAdminController, UserController } from "./controller"
 import { TypeOrmModule } from "@nestjs/typeorm"
 import { User } from "./entity/user"
 import { UserRepository } from "./entity/repository"
-import { FirebaseModule } from "../firebase/module"
-import { UserResolver } from "./resolver"
+import { FirebaseModule } from "../auth/firebase/module"
+import { UserAdminResolver, UserResolver } from "./resolver"
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([User]),
         FirebaseModule,
     ],
-    controllers: [UserController],
-    providers: [UserResolver, UserService, UserRepository],
+    controllers: [UserController, UserAdminController],
+    providers: [UserResolver, UserAdminResolver, UserService, UserRepository],
 })
 export class UserModule {}
