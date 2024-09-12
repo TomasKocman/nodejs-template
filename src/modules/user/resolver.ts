@@ -41,7 +41,7 @@ class UserAdminResolver {
     ) {}
 
     @Query(() => [User])
-    async users(): Promise<User[]> {
+    async usersAsAdmin(): Promise<User[]> {
         const { authAsAdmin } = Als.getContext()
         if (!authAsAdmin) {
             throw new UnauthorizedException()
@@ -51,7 +51,7 @@ class UserAdminResolver {
     }
 
     @Query(() => User)
-    async user(@Args("id", { type: () => UUIDScalar }) id: string): Promise<User> {
+    async userAsAdmin(@Args("id", { type: () => UUIDScalar }) id: string): Promise<User> {
         const { authAsAdmin } = Als.getContext()
         if (!authAsAdmin) {
             throw new UnauthorizedException()
