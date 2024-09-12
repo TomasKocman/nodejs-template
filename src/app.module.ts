@@ -16,7 +16,7 @@ import * as pino from "pino"
 import { load } from "./common/config/load"
 import { RequestIdMiddleware } from "./modules/middleware/requestid"
 import { MaintenanceModule } from "./modules/misc/maintenance/module"
-import { AuthenticationMiddleware } from "./modules/middleware/auth"
+import { GqlAuthenticationMiddleware, HttpAuthenticationMiddleware } from "./modules/middleware/auth"
 import { MiddlewareModule } from "./modules/middleware/module"
 import { FirebaseModule } from "./modules/firebase/module"
 import { UserController } from "./modules/user/controller"
@@ -97,14 +97,16 @@ import { GqlAppExceptionFilter, gqlFormatError } from "./filters/gql.app.excepti
         }
     ]
 })
-
 export class AppModule implements NestModule {
     configure(consumer: MiddlewareConsumer) {
         consumer
             .apply(RequestIdMiddleware, LoggingMiddleware)
             .forRoutes("*")
         consumer.
-            apply(AuthenticationMiddleware).
+            apply(HttpAuthenticationMiddleware).
             forRoutes(UserController)
+        consumer.
+            apply(GqlAuthenticationMiddleware).
+            forRoutes("/graphql")
     }
 }
