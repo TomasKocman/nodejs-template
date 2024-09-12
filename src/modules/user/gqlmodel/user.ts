@@ -24,6 +24,21 @@ class User {
     }
 }
 
+@ObjectType()
+class SignInResp {
+    @Field(() => User)
+    readonly user: User
+
+    @Field()
+    readonly isNewUser: boolean
+
+    constructor(user: EntityUser, isNewUser: boolean) {
+        this.user = new User(user)
+        this.isNewUser = isNewUser
+    }
+}
+
 export {
-    User
+    User,
+    SignInResp
 }

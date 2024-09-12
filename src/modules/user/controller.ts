@@ -65,7 +65,8 @@ export class UserController {
     @ApiResponse(apiResponseUnauthorized)
     @ApiResponse(apiResponseForbidden)
     async me(): Promise<User> {
-        const user = await this.userService.readUser("84c334eb-c23c-4c8c-9fad-4bf2cd5d2855")
+        const { verifiedToken } = Als.getContext()
+        const user = await this.userService.readUser(verifiedToken?.claims.custom.userId!)
         return new User(user)
     }
 
