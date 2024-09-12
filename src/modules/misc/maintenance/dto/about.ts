@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger"
 
-class AppVersionDto {
+class AboutDto {
     @ApiProperty({
         description: "App version",
         example: "0.9.1",
@@ -13,5 +13,5 @@ class AppVersionDto {
 }
 
 export {
-    AppVersionDto
+    AboutDto
 }

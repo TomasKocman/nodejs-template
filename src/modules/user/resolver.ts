@@ -10,10 +10,7 @@ class UserResolver {
     ) {}
 
     @Query(() => User)
-    async user(
-        @Args("id", { type: () => UUIDScalar })
-        id: string,
-    ): Promise<User> {
+    async user(@Args("id", { type: () => UUIDScalar }) id: string): Promise<User> {
         const user = await this.userService.readUser(id)
         return new User(user)
     }

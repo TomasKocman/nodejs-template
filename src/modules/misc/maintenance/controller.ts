@@ -2,11 +2,11 @@ import { Controller, Get, HttpCode } from "@nestjs/common"
 import { ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger"
 import { MaintenanceConfig } from "./config"
 import { load } from "../../../common/config/load"
-import { AppVersionDto } from "./dto/version"
+import { AboutDto } from "./dto/about"
 
 @ApiTags("maintenance")
 @Controller()
-export class Maintenance {
+class MaintenanceController {
     readonly appVersion: string
 
     constructor() {
@@ -24,15 +24,19 @@ export class Maintenance {
     @ApiResponse({ status: 204, description: "Ping" })
     ping() {}
 
-    @Get("/version")
+    @Get("/about")
     @HttpCode(200)
     @ApiOperation({
-        summary: "App version",
-        description: "App version",
-        operationId: "appVersion",
+        summary: "Info about the app",
+        description: "Info about the app like version",
+        operationId: "about",
     })
-    @ApiResponse({ status: 200, type: AppVersionDto, description: "App version" })
-    version() {
-        return new AppVersionDto(this.appVersion)
+    @ApiResponse({ status: 200, type: AboutDto, description: "About" })
+    about() {
+        return new AboutDto(this.appVersion)
     }
+}
+
+export {
+    MaintenanceController
 }
