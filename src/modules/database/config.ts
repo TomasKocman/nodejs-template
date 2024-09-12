@@ -45,4 +45,8 @@ function configToTypeOrmOptions(config: DatabaseConfig): DataSourceOptions {
     }
 }
 
-export { config, DatabaseConfig, configToTypeOrmOptions }
+export {
+    config,
+    DatabaseConfig,
+    configToTypeOrmOptions
+}

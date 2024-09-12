@@ -29,7 +29,7 @@ function errorMessage(err: Error): string {
 }
 
 @Injectable()
-export class LoggingMiddleware implements NestMiddleware {
+class LoggingMiddleware implements NestMiddleware {
     private readonly logger = new Logger(LoggingMiddleware.name)
 
     use(req: Request, res: Response, next: () => void) {
@@ -72,7 +72,7 @@ type GqlErrorFields = {
 }
 
 @Plugin()
-export class ApolloLoggingPlugin implements ApolloServerPlugin {
+class ApolloLoggingPlugin implements ApolloServerPlugin {
     private readonly logger = new Logger(ApolloLoggingPlugin.name)
 
     async requestDidStart(): Promise<GraphQLRequestListener<any>> {
@@ -105,4 +105,9 @@ export class ApolloLoggingPlugin implements ApolloServerPlugin {
             },
         }
     }
+}
+
+export {
+    LoggingMiddleware,
+    ApolloLoggingPlugin
 }

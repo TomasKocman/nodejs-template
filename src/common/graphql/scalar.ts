@@ -9,9 +9,13 @@ function validate(uuid: unknown): string {
     return uuidAsStr
 }
 
-export const UUIDScalar = new GraphQLScalarType({
+const UUIDScalar = new GraphQLScalarType({
     name: "UUID",
     description: "UUID parser",
     serialize: (value) => validate(value),
     parseValue: (value) => validate(value),
 })
+
+export {
+    UUIDScalar
+}
